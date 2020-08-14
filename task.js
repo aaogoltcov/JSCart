@@ -47,9 +47,7 @@ function addProductQuantity(productId, productImg, productQuantity) {
         if (cartArray[node].dataset.id == productId) {
             productQuantity = parseInt(cartArray[node].querySelector('div.cart__product-count').textContent) + parseInt(productQuantity);
             cartArray[node].querySelector('div.cart__product-count').textContent = productQuantity;
-
-            localStorage.removeItem(productId);
-            localStorage.setItem(productId, JSON.stringify({productId, productImg, productQuantity}));
+            updateLocalstorage();
         };
     };
 };
@@ -68,7 +66,7 @@ Array.from(document.querySelectorAll('div.product__add')).forEach(function (item
         let productImg = event.path[3].querySelector('img').src;
         if (productQuantity != 0 && !isProductInCart(productId)) {
             insertProductToCart(productId, productImg, productQuantity);
-            localStorage.setItem(productId, JSON.stringify({productId, productImg, productQuantity}));
+            updateLocalstorage();
         } else if (isProductInCart(productId)) {
             addProductQuantity(productId, productImg, productQuantity);
         };
@@ -84,12 +82,30 @@ function cartClear() {
 };
 
 function renderPage() {
-    if (localStorage.length > 0) {
-        let storageArray = {...localStorage};
-        for (let item in storageArray) {
-            insertProductToCart(JSON.parse(storageArray[item]).productId, JSON.parse(storageArray[item]).productImg, JSON.parse(storageArray[item]).productQuantity);
+    if (localStorage.cart) {
+        let arrayFromStorage = JSON.parse(localStorage.cart);
+        if (arrayFromStorage.length > 0) {
+            for (let item in arrayFromStorage) {
+                insertProductToCart(arrayFromStorage[item].productId, arrayFromStorage[item].productImg, arrayFromStorage[item].productQuantity);
+            };
         };
     };
+};
+
+function updateLocalstorage() {
+    let storageArray = [];
+    let allProducts = Array.from(document.querySelectorAll('div.cart__product'));
+    if (allProducts && allProducts.length > 0) {
+        for (let item in allProducts) {
+            storageArray.push({
+                'productId': allProducts[item].dataset.id,
+                'productImg': allProducts[item].querySelector('img').src,
+                'productQuantity': allProducts[item].querySelector('div.cart__product-count').innerText,
+            });
+        };
+    };
+    localStorage.clear();
+    localStorage.setItem('cart', JSON.stringify(storageArray));
 };
 
 renderPage();
