@@ -77,7 +77,7 @@ Array.from(document.querySelectorAll('div.product__add')).forEach(function (item
 function cartClear() {
     document.querySelector('div.cart__clear').onclick = function () {
         document.querySelector('div.cart').remove();
-        localStorage.clear();
+        localStorage.removeItem('cart');
     };
 };
 
@@ -104,7 +104,7 @@ function updateLocalstorage() {
             });
         };
     };
-    localStorage.clear();
+    localStorage.removeItem('cart');
     localStorage.setItem('cart', JSON.stringify(storageArray));
 };
 
